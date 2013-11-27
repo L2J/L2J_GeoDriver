@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="L2JGeoDriver" default="build" basedir=".">
+	<path id="classpath">
+		<fileset dir="${basedir}/build/dist">
+			<include name="L2JGeoAbstraction.jar" />
+		</fileset>
+	</path>
+	
+	<tstamp>
+		<format property="build_date" pattern="dd/MM/yyyy HH:mm" />
+	</tstamp>
+
+	<target name="build" description="Builds the project.">
+		<!-- Clean output directories -->
+		<delete dir="${basedir}/build"/>
+		<mkdir dir="${basedir}/build/bin"/>
+		<mkdir dir="${basedir}/build/dist"/>
+		
+		<!-- Build dependencies -->
+		<ant dir="${basedir}/../L2JGeoAbstraction/"/>
+		
+		<!-- Copy dependency resources -->
+		<copy todir="${basedir}/build/dist">
+			<fileset dir="${basedir}/../L2JGeoAbstraction/build/dist"/>
+		</copy>
+		
+		<!-- Compile sourcecode -->
+		<javac classpathref="classpath" srcdir="${basedir}/src" destdir="${basedir}/build/bin" compiler="javac1.7" debug="on" debuglevel="lines,vars,source" includeantruntime="off" source="1.7" target="1.7"/>
+
+		<!-- Create jar file -->
+		<jar destfile="${basedir}/build/dist/${ant.project.name}.jar" level="9">
+			<fileset dir="${basedir}/build/bin"/>
+			<fileset dir="${basedir}/src"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Built-Date" value="${build_date}" />
+			</manifest>
+		</jar>
+	</target>
+</project>
