@@ -39,7 +39,7 @@ import com.l2jserver.gameserver.geoengine.abstraction.IGeoDriver;
  */
 public final class GeoDriver implements IGeoDriver
 {
-	private final Logger _LOGGER = Logger.getLogger(GeoDriver.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(GeoDriver.class.getName());
 	
 	// world dimensions: 1048576 * 1048576 = 1099511627776
 	private static final int WORLD_MIN_X = -655360;
@@ -125,7 +125,7 @@ public final class GeoDriver implements IGeoDriver
 			}
 		}
 		
-		_LOGGER.info("Loaded " + loadedRegions + " regions.");
+		LOGGER.info("Loaded " + loadedRegions + " regions.");
 	}
 	
 	private String _loadProperty(Properties props, String propertyKey)
@@ -146,7 +146,7 @@ public final class GeoDriver implements IGeoDriver
 			MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size()).load();
 			mbb.order(ByteOrder.LITTLE_ENDIAN);
 			NonNullRegion nnr = new NonNullRegion(mbb);
-			_LOGGER.info("Loaded " + filePath);
+			LOGGER.info("Loaded " + filePath);
 			return nnr;
 		}
 	}
