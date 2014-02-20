@@ -17,11 +17,11 @@
 		<mkdir dir="${basedir}/build/dist"/>
 		
 		<!-- Build dependencies -->
-		<ant dir="${basedir}/../L2J_GeoAbstraction/"/>
+		<ant dir="${basedir}/../L2JGeoAbstraction/"/>
 		
 		<!-- Copy dependency resources -->
 		<copy todir="${basedir}/build/dist">
-			<fileset dir="${basedir}/../L2J_GeoAbstraction/build/dist"/>
+			<fileset dir="${basedir}/../L2JGeoAbstraction/build/dist"/>
 		</copy>
 		
 		<!-- Compile sourcecode -->
