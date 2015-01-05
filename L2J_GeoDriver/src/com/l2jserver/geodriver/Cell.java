@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2013 L2J Server
+ * Copyright (C) 2004-2015 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -16,33 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.l2j.geodriver;
+package com.l2jserver.geodriver;
 
 /**
- * @author FBIagent
+ * @author HorridoJoho
  */
 public final class Cell
 {
 	/** East NSWE flag */
-	public static final byte FLAG_NSWE_EAST = 1 << 0;
+	public static final byte NSWE_EAST = 1 << 0;
 	/** West NSWE flag */
-	public static final byte FLAG_NSWE_WEST = 1 << 1;
+	public static final byte NSWE_WEST = 1 << 1;
 	/** South NSWE flag */
-	public static final byte FLAG_NSWE_SOUTH = 1 << 2;
+	public static final byte NSWE_SOUTH = 1 << 2;
 	/** North NSWE flag */
-	public static final byte FLAG_NSWE_NORTH = 1 << 3;
+	public static final byte NSWE_NORTH = 1 << 3;
 	
 	/** North-East NSWE flags */
-	public static final byte FLAG_NSWE_NORTH_EAST = FLAG_NSWE_NORTH | FLAG_NSWE_EAST;
+	public static final byte NSWE_NORTH_EAST = NSWE_NORTH | NSWE_EAST;
 	/** North-West NSWE flags */
-	public static final byte FLAG_NSWE_NORTH_WEST = FLAG_NSWE_NORTH | FLAG_NSWE_WEST;
+	public static final byte NSWE_NORTH_WEST = NSWE_NORTH | NSWE_WEST;
 	/** South-East NSWE flags */
-	public static final byte FLAG_NSWE_SOUTH_EAST = FLAG_NSWE_SOUTH | FLAG_NSWE_EAST;
+	public static final byte NSWE_SOUTH_EAST = NSWE_SOUTH | NSWE_EAST;
 	/** South-West NSWE flags */
-	public static final byte FLAG_NSWE_SOUTH_WEST = FLAG_NSWE_SOUTH | FLAG_NSWE_WEST;
+	public static final byte NSWE_SOUTH_WEST = NSWE_SOUTH | NSWE_WEST;
 	
 	/** All directions NSWE flags */
-	public static final byte FLAG_NSWE_ALL = FLAG_NSWE_EAST | FLAG_NSWE_WEST | FLAG_NSWE_SOUTH | FLAG_NSWE_NORTH;
+	public static final byte NSWE_ALL = NSWE_EAST | NSWE_WEST | NSWE_SOUTH | NSWE_NORTH;
 	
 	private Cell()
 	{

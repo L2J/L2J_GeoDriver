@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2013 L2J Server
+ * Copyright (C) 2004-2015 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -16,22 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.l2j.geodriver.blocks;
+package com.l2jserver.geodriver.blocks;
 
 import java.nio.ByteBuffer;
 
-import com.l2j.geodriver.Cell;
-import com.l2j.geodriver.IBlock;
-import com.l2j.geodriver.Utils;
-import com.l2jserver.gameserver.geoengine.Direction;
+import com.l2jserver.geodriver.IBlock;
 
 /**
  * @author FBIagent
  */
-public class MultilayerBlock implements IBlock
+public class MultilayerBlock extends AbstractBlock
 {
-	private final int _bbPos;
-	private final ByteBuffer _bb;
+	private final byte[] _data;
 	
 	/**
 	 * Initializes a new instance of this block reading the specified buffer.
@@ -39,36 +35,36 @@ public class MultilayerBlock implements IBlock
 	 */
 	public MultilayerBlock(ByteBuffer bb)
 	{
-		_bbPos = bb.position();
-		_bb = bb;
+		int start = bb.position();
 		
-		byte numLayers;
-		for (int blockCellOffset = 0; blockCellOffset < IBlock.BLOCK_CELLS; ++blockCellOffset)
+		for (int blockCellOffset = 0; blockCellOffset < IBlock.BLOCK_CELLS; blockCellOffset++)
 		{
-			numLayers = _bb.get();
-			if ((numLayers <= 0) || (numLayers > 125))
+			byte nLayers = bb.get();
+			if ((nLayers <= 0) || (nLayers > 125))
 			{
 				throw new RuntimeException("L2JGeoDriver: Geo file corrupted! Invalid layers count!");
 			}
 			
-			_bb.position(_bb.position() + (numLayers * 2));
+			bb.position(bb.position() + (nLayers * 2));
 		}
+		
+		_data = new byte[bb.position() - start];
+		bb.position(start);
+		bb.get(_data);
 	}
 	
 	private short _getNearestLayer(int geoX, int geoY, int worldZ)
 	{
-		int index = _getCellIndex(geoX, geoY);
-		byte numLayers = _bb.get(index);
-		++index;
+		int startOffset = _getCellDataOffset(geoX, geoY);
+		byte nLayers = _data[startOffset];
+		int endOffset = startOffset + 1 + (nLayers * 2);
 		
 		// 1 layer at least was required on loading so this is set at least once on the loop below
 		int nearestDZ = 0;
 		short nearestData = 0;
-		for (int i = 0; i < numLayers; ++i)
+		for (int offset = startOffset + 1; offset < endOffset; offset += 2)
 		{
-			short layerData = _bb.getShort(index);
-			index += 2;
-			
+			short layerData = _extractLayerData(offset);
 			int layerZ = _extractLayerHeight(layerData);
 			if (layerZ == worldZ)
 			{
@@ -77,7 +73,7 @@ public class MultilayerBlock implements IBlock
 			}
 			
 			int layerDZ = Math.abs(layerZ - worldZ);
-			if ((i == 0) || (layerDZ < nearestDZ))
+			if ((offset == (startOffset + 1)) || (layerDZ < nearestDZ))
 			{
 				nearestDZ = layerDZ;
 				nearestData = layerData;
@@ -87,23 +83,33 @@ public class MultilayerBlock implements IBlock
 		return nearestData;
 	}
 	
-	private int _getCellIndex(int geoX, int geoY)
+	private int _getCellDataOffset(int geoX, int geoY)
 	{
-		int cellOffset = ((geoX % IBlock.BLOCK_CELLS_X) * IBlock.BLOCK_CELLS_Y) + (geoY % IBlock.BLOCK_CELLS_Y);
-		int index = _bbPos;
+		int cellLocalOffset = ((geoX % IBlock.BLOCK_CELLS_X) * IBlock.BLOCK_CELLS_Y) + (geoY % IBlock.BLOCK_CELLS_Y);
+		int cellDataOffset = 0;
 		// move index to cell, we need to parse on each request, OR we parse on creation and save indexes
-		for (int i = 0; i < cellOffset; ++i)
+		for (int i = 0; i < cellLocalOffset; i++)
 		{
-			index += 1 + (_bb.get(index) * 2);
+			cellDataOffset += 1 + (_data[cellDataOffset] * 2);
 		}
 		// now the index points to the cell we need
 		
-		return index;
+		return cellDataOffset;
 	}
 	
-	private byte _getNearestNSWE(int geoX, int geoY, int worldZ)
+	private short _extractLayerData(int dataOffset)
 	{
-		return (byte) (_getNearestLayer(geoX, geoY, worldZ) & 0x000F);
+		return (short) ((_data[dataOffset] & 0xFF) | (_data[dataOffset + 1] << 8));
+	}
+	
+	private int _getNearestNSWE(int geoX, int geoY, int worldZ)
+	{
+		return _extractLayerNswe(_getNearestLayer(geoX, geoY, worldZ));
+	}
+	
+	private int _extractLayerNswe(short layer)
+	{
+		return (byte) (layer & 0x000F);
 	}
 	
 	private int _extractLayerHeight(short layer)
@@ -113,9 +119,17 @@ public class MultilayerBlock implements IBlock
 	}
 	
 	@Override
-	public boolean hasGeoPos(int geoX, int geoY)
+	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe)
 	{
-		return true;
+		return (_getNearestNSWE(geoX, geoY, worldZ) & nswe) == nswe;
+	}
+	
+	@Override
+	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit)
+	{
+		short layer = _getNearestLayer(geoX, geoY, worldZ);
+		int height = _extractLayerHeight(layer);
+		return Math.abs(worldZ - height) > zDeltaLimit ? true : (_extractLayerNswe(layer) & nswe) == nswe;
 	}
 	
 	@Override
@@ -127,15 +141,14 @@ public class MultilayerBlock implements IBlock
 	@Override
 	public int getNextLowerZ(int geoX, int geoY, int worldZ)
 	{
-		int index = _getCellIndex(geoX, geoY);
-		byte numLayers = _bb.get(index);
-		++index;
+		int startOffset = _getCellDataOffset(geoX, geoY);
+		byte nLayers = _data[startOffset];
+		int endOffset = startOffset + 1 + (nLayers * 2);
 		
 		int lowerZ = Integer.MIN_VALUE;
-		for (int i = 0; i < numLayers; ++i)
+		for (int offset = startOffset + 1; offset < endOffset; offset += 2)
 		{
-			short layerData = _bb.getShort(index);
-			index += 2;
+			short layerData = _extractLayerData(offset);
 			
 			int layerZ = _extractLayerHeight(layerData);
 			if (layerZ == worldZ)
@@ -156,15 +169,14 @@ public class MultilayerBlock implements IBlock
 	@Override
 	public int getNextHigherZ(int geoX, int geoY, int worldZ)
 	{
-		int index = _getCellIndex(geoX, geoY);
-		byte numLayers = _bb.get(index);
-		++index;
+		int startOffset = _getCellDataOffset(geoX, geoY);
+		byte nLayers = _data[startOffset];
+		int endOffset = startOffset + 1 + (nLayers * 2);
 		
 		int higherZ = Integer.MAX_VALUE;
-		for (int i = 0; i < numLayers; ++i)
+		for (int offset = startOffset + 1; offset < endOffset; offset += 2)
 		{
-			short layerData = _bb.getShort(index);
-			index += 2;
+			short layerData = _extractLayerData(offset);
 			
 			int layerZ = _extractLayerHeight(layerData);
 			if (layerZ == worldZ)
@@ -180,17 +192,5 @@ public class MultilayerBlock implements IBlock
 		}
 		
 		return higherZ == Integer.MAX_VALUE ? worldZ : higherZ;
-	}
-	
-	@Override
-	public boolean canMoveIntoDirections(int geoX, int geoY, int worldZ, Direction first, Direction... more)
-	{
-		return Utils.canMoveIntoDirections(_getNearestNSWE(geoX, geoY, worldZ), first, more);
-	}
-	
-	@Override
-	public boolean canMoveIntoAllDirections(int geoX, int geoY, int worldZ)
-	{
-		return _getNearestNSWE(geoX, geoY, worldZ) == Cell.FLAG_NSWE_ALL;
 	}
 }

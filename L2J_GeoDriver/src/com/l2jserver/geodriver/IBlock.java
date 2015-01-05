@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2013 L2J Server
+ * Copyright (C) 2004-2015 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -16,28 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.l2j.geodriver;
-
-import com.l2jserver.gameserver.geoengine.Direction;
+package com.l2jserver.geodriver;
 
 /**
- * @author FBIagent
+ * @author HorridoJoho
  */
 public interface IBlock
 {
-	/**
-	 * Region type.
-	 * @author FBIagent
-	 */
-	public enum Type
-	{
-		/** Flat block type */
-		FLAT,
-		/** Complex block type */
-		COMPLEX,
-		/** Multilayer block type */
-		MULTILAYER
-	}
+	public static final int TYPE_FLAT = 0;
+	public static final int TYPE_COMPLEX = 1;
+	public static final int TYPE_MULTILAYER = 2;
 	
 	/** Cells in a block on the x axis */
 	public static final int BLOCK_CELLS_X = 8;
@@ -46,15 +34,19 @@ public interface IBlock
 	/** Cells in a block */
 	public static final int BLOCK_CELLS = BLOCK_CELLS_X * BLOCK_CELLS_Y;
 	
-	boolean hasGeoPos(int geoX, int geoY);
+	boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe);
+	
+	boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit);
 	
 	int getNearestZ(int geoX, int geoY, int worldZ);
 	
+	int getNearestZ(int geoX, int geoY, int worldZ, int zDeltaLimit);
+	
 	int getNextLowerZ(int geoX, int geoY, int worldZ);
+	
+	int getNextLowerZ(int geoX, int geoY, int worldZ, int zDeltaLimit);
 	
 	int getNextHigherZ(int geoX, int geoY, int worldZ);
 	
-	boolean canMoveIntoDirections(int geoX, int geoY, int worldZ, Direction first, Direction... more);
-	
-	boolean canMoveIntoAllDirections(int geoX, int geoY, int worldZ);
+	int getNextHigherZ(int geoX, int geoY, int worldZ, int zDeltaLimit);
 }

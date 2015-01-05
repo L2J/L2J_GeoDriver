@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2013 L2J Server
+ * Copyright (C) 2004-2015 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -16,37 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.l2j.geodriver.blocks;
+package com.l2jserver.geodriver.blocks;
 
 import java.nio.ByteBuffer;
 
-import com.l2j.geodriver.Cell;
-import com.l2j.geodriver.IBlock;
-import com.l2j.geodriver.Utils;
-import com.l2jserver.gameserver.geoengine.Direction;
+import com.l2jserver.geodriver.IBlock;
 
 /**
- * @author FBIagent
+ * @author HorridoJoho
  */
-public final class ComplexBlock implements IBlock
+public final class ComplexBlock extends AbstractBlock
 {
-	private final int _bbPos;
-	private final ByteBuffer _bb;
+	private final short[] _data;
 	
-	/**
-	 * Initializes a new instance of this block reading the specified buffer.
-	 * @param bb the buffer
-	 */
 	public ComplexBlock(ByteBuffer bb)
 	{
-		_bbPos = bb.position();
-		_bb = bb;
-		_bb.position(_bbPos + (IBlock.BLOCK_CELLS * 2));
+		_data = new short[IBlock.BLOCK_CELLS];
+		for (int cellOffset = 0; cellOffset < IBlock.BLOCK_CELLS; cellOffset++)
+		{
+			_data[cellOffset] = bb.getShort();
+		}
 	}
 	
 	private short _getCellData(int geoX, int geoY)
 	{
-		return _bb.getShort(_bbPos + ((((geoX % IBlock.BLOCK_CELLS_X) * IBlock.BLOCK_CELLS_Y) + (geoY % IBlock.BLOCK_CELLS_Y)) * 2));
+		return _data[((geoX % IBlock.BLOCK_CELLS_X) * IBlock.BLOCK_CELLS_Y) + (geoY % IBlock.BLOCK_CELLS_Y)];
 	}
 	
 	private byte _getCellNSWE(int geoX, int geoY)
@@ -56,14 +50,21 @@ public final class ComplexBlock implements IBlock
 	
 	private int _getCellHeight(int geoX, int geoY)
 	{
-		short height = (short) (_getCellData(geoX, geoY) & 0x0fff0);
+		short height = (short) (_getCellData(geoX, geoY) & 0x0FFF0);
 		return height >> 1;
 	}
 	
 	@Override
-	public boolean hasGeoPos(int geoX, int geoY)
+	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe)
 	{
-		return true;
+		return (_getCellNSWE(geoX, geoY) & nswe) == nswe;
+	}
+	
+	@Override
+	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit)
+	{
+		int height = _getCellHeight(geoX, geoY);
+		return Math.abs(worldZ - height) > zDeltaLimit ? true : (_getCellNSWE(geoX, geoY) & nswe) == nswe;
 	}
 	
 	@Override
@@ -84,17 +85,5 @@ public final class ComplexBlock implements IBlock
 	{
 		int cellHeight = _getCellHeight(geoX, geoY);
 		return cellHeight >= worldZ ? cellHeight : worldZ;
-	}
-	
-	@Override
-	public boolean canMoveIntoDirections(int geoX, int geoY, int worldZ, Direction first, Direction... more)
-	{
-		return Utils.canMoveIntoDirections(_getCellNSWE(geoX, geoY), first, more);
-	}
-	
-	@Override
-	public boolean canMoveIntoAllDirections(int geoX, int geoY, int worldZ)
-	{
-		return _getCellNSWE(geoX, geoY) == Cell.FLAG_NSWE_ALL;
 	}
 }

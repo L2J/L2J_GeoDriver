@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2013 L2J Server
+ * Copyright (C) 2004-2015 L2J Server
  * 
  * This file is part of L2J Server.
  * 
@@ -16,29 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.l2j.geodriver.regions;
+package com.l2jserver.geodriver.regions;
 
-import com.l2j.geodriver.IRegion;
-import com.l2jserver.gameserver.geoengine.Direction;
+import com.l2jserver.geodriver.IRegion;
 
 /**
- * @author FBIagent
+ * @author HorridoJoho
  */
 public final class NullRegion implements IRegion
 {
-	/**
-	 * The only required instance of this class.
-	 */
 	public static final NullRegion INSTANCE = new NullRegion();
 	
 	@Override
-	public boolean hasGeoPos(int geoX, int geoY)
+	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe)
 	{
-		return false;
+		return true;
+	}
+	
+	@Override
+	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit)
+	{
+		return true;
 	}
 	
 	@Override
 	public int getNearestZ(int geoX, int geoY, int worldZ)
+	{
+		return worldZ;
+	}
+	
+	@Override
+	public int getNearestZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
 	{
 		return worldZ;
 	}
@@ -50,20 +58,26 @@ public final class NullRegion implements IRegion
 	}
 	
 	@Override
+	public int getNextLowerZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
+	{
+		return worldZ;
+	}
+	
+	@Override
 	public int getNextHigherZ(int geoX, int geoY, int worldZ)
 	{
 		return worldZ;
 	}
 	
 	@Override
-	public boolean canMoveIntoDirections(int geoX, int geoY, int worldZ, Direction first, Direction... more)
+	public int getNextHigherZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
 	{
-		return true;
+		return worldZ;
 	}
 	
 	@Override
-	public boolean canMoveIntoAllDirections(int geoX, int geoY, int worldZ)
+	public boolean hasGeo()
 	{
-		return true;
+		return false;
 	}
 }
