@@ -106,7 +106,7 @@ public final class GeoDriver
 	
 	public boolean hasGeoPos(int geoX, int geoY)
 	{
-		return getRegion(geoX, geoY) != null;
+		return getRegion(geoX, geoY).hasGeo();
 	}
 	
 	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe)
