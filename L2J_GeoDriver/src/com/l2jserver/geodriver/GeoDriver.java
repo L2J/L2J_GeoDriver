@@ -23,9 +23,9 @@ import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import com.l2jserver.geodriver.regions.NonNullRegion;
+import com.l2jserver.geodriver.regions.Region;
 import com.l2jserver.geodriver.regions.NullRegion;
 
 /**
@@ -59,11 +59,14 @@ public final class GeoDriver
 	public static final int GEO_CELLS_Y = GEO_BLOCKS_Y * IBlock.BLOCK_CELLS_Y;
 	
 	/** The regions array */
-	private volatile IRegion[] _regions = new IRegion[GEO_REGIONS];
+	private final AtomicReferenceArray<IRegion> _regions = new AtomicReferenceArray<>(GEO_REGIONS);
 	
 	public GeoDriver()
 	{
-		Arrays.fill(_regions, NullRegion.INSTANCE);
+		for (int i = 0; i < _regions.length(); i++)
+		{
+			_regions.set(i, NullRegion.INSTANCE);
+		}
 	}
 	
 	private void checkGeoX(int geoX)
@@ -86,7 +89,7 @@ public final class GeoDriver
 	{
 		checkGeoX(geoX);
 		checkGeoY(geoY);
-		return _regions[((geoX / IRegion.REGION_CELLS_X) * GEO_REGIONS_Y) + (geoY / IRegion.REGION_CELLS_Y)];
+		return _regions.get(((geoX / IRegion.REGION_CELLS_X) * GEO_REGIONS_Y) + (geoY / IRegion.REGION_CELLS_Y));
 	}
 	
 	public void loadRegion(Path filePath, int regionX, int regionY) throws IOException
@@ -95,13 +98,13 @@ public final class GeoDriver
 		
 		try (RandomAccessFile raf = new RandomAccessFile(filePath.toFile(), "r"))
 		{
-			_regions[regionOffset] = new NonNullRegion(raf.getChannel().map(MapMode.READ_ONLY, 0, raf.length()).order(ByteOrder.LITTLE_ENDIAN));
+			_regions.set(regionOffset, new Region(raf.getChannel().map(MapMode.READ_ONLY, 0, raf.length()).order(ByteOrder.LITTLE_ENDIAN)));
 		}
 	}
 	
 	public void unloadRegion(int regionX, int regionY)
 	{
-		_regions[(regionX * GEO_REGIONS_Y) + regionY] = NullRegion.INSTANCE;
+		_regions.set((regionX * GEO_REGIONS_Y) + regionY, NullRegion.INSTANCE);
 	}
 	
 	public boolean hasGeoPos(int geoX, int geoY)

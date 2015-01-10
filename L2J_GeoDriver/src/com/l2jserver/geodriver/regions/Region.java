@@ -29,11 +29,11 @@ import com.l2jserver.geodriver.blocks.MultilayerBlock;
 /**
  * @author HorridoJoho
  */
-public final class NonNullRegion implements IRegion
+public final class Region implements IRegion
 {
 	private final IBlock[] _blocks = new IBlock[IRegion.REGION_BLOCKS];
 	
-	public NonNullRegion(ByteBuffer bb)
+	public Region(ByteBuffer bb)
 	{
 		for (int blockOffset = 0; blockOffset < IRegion.REGION_BLOCKS; blockOffset++)
 		{
