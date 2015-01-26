@@ -34,19 +34,7 @@ public final class NullRegion implements IRegion
 	}
 	
 	@Override
-	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit)
-	{
-		return true;
-	}
-	
-	@Override
 	public int getNearestZ(int geoX, int geoY, int worldZ)
-	{
-		return worldZ;
-	}
-	
-	@Override
-	public int getNearestZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
 	{
 		return worldZ;
 	}
@@ -58,19 +46,7 @@ public final class NullRegion implements IRegion
 	}
 	
 	@Override
-	public int getNextLowerZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
-	{
-		return worldZ;
-	}
-	
-	@Override
 	public int getNextHigherZ(int geoX, int geoY, int worldZ)
-	{
-		return worldZ;
-	}
-	
-	@Override
-	public int getNextHigherZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
 	{
 		return worldZ;
 	}

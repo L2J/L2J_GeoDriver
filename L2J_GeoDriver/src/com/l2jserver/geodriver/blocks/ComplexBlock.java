@@ -25,7 +25,7 @@ import com.l2jserver.geodriver.IBlock;
 /**
  * @author HorridoJoho
  */
-public final class ComplexBlock extends AbstractBlock
+public final class ComplexBlock implements IBlock
 {
 	private final short[] _data;
 	
@@ -58,13 +58,6 @@ public final class ComplexBlock extends AbstractBlock
 	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe)
 	{
 		return (_getCellNSWE(geoX, geoY) & nswe) == nswe;
-	}
-	
-	@Override
-	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit)
-	{
-		int height = _getCellHeight(geoX, geoY);
-		return Math.abs(worldZ - height) > zDeltaLimit ? true : (_getCellNSWE(geoX, geoY) & nswe) == nswe;
 	}
 	
 	@Override

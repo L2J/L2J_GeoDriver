@@ -20,10 +20,12 @@ package com.l2jserver.geodriver.blocks;
 
 import java.nio.ByteBuffer;
 
+import com.l2jserver.geodriver.IBlock;
+
 /**
  * @author HorridoJoho
  */
-public class FlatBlock extends AbstractBlock
+public class FlatBlock implements IBlock
 {
 	private final short _height;
 	
@@ -34,12 +36,6 @@ public class FlatBlock extends AbstractBlock
 	
 	@Override
 	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe)
-	{
-		return true;
-	}
-	
-	@Override
-	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit)
 	{
 		return true;
 	}

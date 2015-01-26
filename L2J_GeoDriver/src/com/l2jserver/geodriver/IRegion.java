@@ -39,19 +39,11 @@ public interface IRegion
 	
 	boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe);
 	
-	boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit);
-	
 	int getNearestZ(int geoX, int geoY, int worldZ);
-	
-	int getNearestZ(int geoX, int geoY, int worldZ, int zDeltaLimit);
 	
 	int getNextLowerZ(int geoX, int geoY, int worldZ);
 	
-	int getNextLowerZ(int geoX, int geoY, int worldZ, int zDeltaLimit);
-	
 	int getNextHigherZ(int geoX, int geoY, int worldZ);
-	
-	int getNextHigherZ(int geoX, int geoY, int worldZ, int zDeltaLimit);
 	
 	boolean hasGeo();
 }

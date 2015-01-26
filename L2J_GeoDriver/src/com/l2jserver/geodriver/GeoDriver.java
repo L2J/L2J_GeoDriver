@@ -25,8 +25,8 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import com.l2jserver.geodriver.regions.Region;
 import com.l2jserver.geodriver.regions.NullRegion;
+import com.l2jserver.geodriver.regions.Region;
 
 /**
  * @author HorridoJoho
@@ -117,19 +117,9 @@ public final class GeoDriver
 		return getRegion(geoX, geoY).checkNearestNswe(geoX, geoY, worldZ, nswe);
 	}
 	
-	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit)
-	{
-		return getRegion(geoX, geoY).checkNearestNswe(geoX, geoY, worldZ, nswe, zDeltaLimit);
-	}
-	
 	public int getNearestZ(int geoX, int geoY, int worldZ)
 	{
 		return getRegion(geoX, geoY).getNearestZ(geoX, geoY, worldZ);
-	}
-	
-	public int getNearestZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
-	{
-		return getRegion(geoX, geoY).getNearestZ(geoX, geoY, worldZ, zDeltaLimit);
 	}
 	
 	public int getNextLowerZ(int geoX, int geoY, int worldZ)
@@ -137,19 +127,9 @@ public final class GeoDriver
 		return getRegion(geoX, geoY).getNextLowerZ(geoX, geoY, worldZ);
 	}
 	
-	public int getNextLowerZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
-	{
-		return getRegion(geoX, geoY).getNextLowerZ(geoX, geoY, worldZ, zDeltaLimit);
-	}
-	
 	public int getNextHigherZ(int geoX, int geoY, int worldZ)
 	{
 		return getRegion(geoX, geoY).getNextHigherZ(geoX, geoY, worldZ);
-	}
-	
-	public int getNextHigherZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
-	{
-		return getRegion(geoX, geoY).getNextHigherZ(geoX, geoY, worldZ, zDeltaLimit);
 	}
 	
 	public int getGeoX(int worldX)

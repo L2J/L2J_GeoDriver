@@ -25,7 +25,7 @@ import com.l2jserver.geodriver.IBlock;
 /**
  * @author FBIagent
  */
-public class MultilayerBlock extends AbstractBlock
+public class MultilayerBlock implements IBlock
 {
 	private final byte[] _data;
 	
@@ -122,14 +122,6 @@ public class MultilayerBlock extends AbstractBlock
 	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe)
 	{
 		return (_getNearestNSWE(geoX, geoY, worldZ) & nswe) == nswe;
-	}
-	
-	@Override
-	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit)
-	{
-		short layer = _getNearestLayer(geoX, geoY, worldZ);
-		int height = _extractLayerHeight(layer);
-		return Math.abs(worldZ - height) > zDeltaLimit ? true : (_extractLayerNswe(layer) & nswe) == nswe;
 	}
 	
 	@Override

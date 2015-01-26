@@ -67,21 +67,9 @@ public final class Region implements IRegion
 	}
 	
 	@Override
-	public boolean checkNearestNswe(int geoX, int geoY, int worldZ, int nswe, int zDeltaLimit)
-	{
-		return getBlock(geoX, geoY).checkNearestNswe(geoX, geoY, worldZ, nswe, zDeltaLimit);
-	}
-	
-	@Override
 	public int getNearestZ(int geoX, int geoY, int worldZ)
 	{
 		return getBlock(geoX, geoY).getNearestZ(geoX, geoY, worldZ);
-	}
-	
-	@Override
-	public int getNearestZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
-	{
-		return getBlock(geoX, geoY).getNearestZ(geoX, geoY, worldZ, zDeltaLimit);
 	}
 	
 	@Override
@@ -91,21 +79,9 @@ public final class Region implements IRegion
 	}
 	
 	@Override
-	public int getNextLowerZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
-	{
-		return getBlock(geoX, geoY).getNextLowerZ(geoX, geoY, worldZ, zDeltaLimit);
-	}
-	
-	@Override
 	public int getNextHigherZ(int geoX, int geoY, int worldZ)
 	{
 		return getBlock(geoX, geoY).getNextHigherZ(geoX, geoY, worldZ);
-	}
-	
-	@Override
-	public int getNextHigherZ(int geoX, int geoY, int worldZ, int zDeltaLimit)
-	{
-		return getBlock(geoX, geoY).getNextHigherZ(geoX, geoY, worldZ, zDeltaLimit);
 	}
 	
 	@Override
